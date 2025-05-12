@@ -6,6 +6,8 @@ import { useRouter } from 'next/navigation';
 export default function ExecutionClient({ id }: { id: string }) {
     const [execution, setExecution] = useState<any>(null);
     const [question, setQuestion] = useState('');
+    const [models, setModels] = useState<string[]>([]);
+    const [selectedModel, setSelectedModel] = useState<string>('openai/gpt-3.5-turbo');
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
@@ -24,6 +26,24 @@ export default function ExecutionClient({ id }: { id: string }) {
         loadExecution();
     }, [id]);
 
+    useEffect(() => {
+        const loadModels = async () => {
+            try {
+                const res = await fetch('http://192.168.1.250:3000/models');
+                const data = await res.json();
+                if (Array.isArray(data.data)) {
+                    setModels(data.data.map((m: any) => m.id));
+                } else {
+                    console.error('Некорректный ответ от /models:', data);
+                }
+            } catch (e) {
+                console.error('[UI] Ошибка при загрузке моделей:', e);
+            }
+        };
+
+        loadModels();
+    }, []);
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
@@ -32,7 +52,7 @@ export default function ExecutionClient({ id }: { id: string }) {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 type: 'agent',
-                input: { question },
+                input: { question, model: selectedModel },
             }),
         });
 
@@ -89,6 +109,18 @@ export default function ExecutionClient({ id }: { id: string }) {
 
             <form onSubmit={handleSubmit} className="space-y-3">
                 <h3 className="text-lg font-semibold">➕ Добавить шаг</h3>
+
+                <label className="block text-sm font-medium text-gray-700 mb-1">Модель</label>
+                <select
+                    value={selectedModel}
+                    onChange={(e) => setSelectedModel(e.target.value)}
+                    className="w-full p-2 rounded border border-gray-400 bg-white text-black mb-4"
+                >
+                    {models.map((m) => (
+                        <option key={m} value={m}>{m}</option>
+                    ))}
+                </select>
+
                 <input
                     type="text"
                     value={question}

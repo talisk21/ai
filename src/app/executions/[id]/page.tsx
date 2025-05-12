@@ -1,5 +1,5 @@
-import ExecutionClient from './ExecutionClient';
+import ExecutionPageClient from './ExecutionPageClient';
 
 export default function ExecutionPage({ params }: { params: { id: string } }) {
-    return <ExecutionClient id={params.id} />;
+    return <ExecutionPageClient id={params.id} />;
 }
