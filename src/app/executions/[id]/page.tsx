@@ -1,5 +1,11 @@
+
 import ExecutionPageClient from './ExecutionPageClient';
 
-export default function ExecutionPage({ params }: { params: { id: string } }) {
-    return <ExecutionPageClient id={params.id} />;
+interface PageProps {
+    params: Promise<{ id: string }>
+}
+
+export default async function ExecutionPage({ params }: PageProps) {
+    const { id } = await params
+    return <ExecutionPageClient id={id} />;
 }
