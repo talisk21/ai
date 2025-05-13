@@ -19,7 +19,7 @@ export default function ExecutionClient({ id }: { id: string }) {
             setExecution(data);
         } catch (e) {
             console.error('[UI] Ошибка при загрузке execution:', e);
-        }
+        }   
     };
 
     useEffect(() => {
