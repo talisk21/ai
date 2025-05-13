@@ -16,12 +16,13 @@ export default function ExecutionClient({ id }: { id: string }) {
     const loadExecution = async () => {
         try {
             const res = await apiMain.get(`/executions/${id}`);
+            console.log("res " ,res);
             if (!res?.data) throw new Error('Ошибка загрузки');
             const data = await res?.data
             setExecution(data);
         } catch (e) {
             console.error('[UI] Ошибка при загрузке execution:', e);
-        }          
+        }
     };
 
     useEffect(() => {
