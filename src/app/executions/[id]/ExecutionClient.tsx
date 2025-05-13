@@ -1,21 +1,23 @@
 'use client';
 
 import { useEffect, useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+//import { useRouter } from 'next/navigation';
+import {apiMain} from "@/lib/axiosInstance";
 
 export default function ExecutionClient({ id }: { id: string }) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [execution, setExecution] = useState<any>(null);
     const [question, setQuestion] = useState('');
     const [models, setModels] = useState<string[]>([]);
     const [selectedModel, setSelectedModel] = useState<string>('openai/gpt-3.5-turbo');
     const [isPending, startTransition] = useTransition();
-    const router = useRouter();
+    //const router = useRouter();
 
     const loadExecution = async () => {
         try {
-            const res = await fetch(`http://192.168.1.250:3000/executions/${id}`);
-            if (!res.ok) throw new Error('Ошибка загрузки');
-            const data = await res.json();
+            const res = await apiMain.get(`/executions/${id}`);
+            if (!res?.data) throw new Error('Ошибка загрузки');
+            const data = await res?.data
             setExecution(data);
         } catch (e) {
             console.error('[UI] Ошибка при загрузке execution:', e);
@@ -29,9 +31,10 @@ export default function ExecutionClient({ id }: { id: string }) {
     useEffect(() => {
         const loadModels = async () => {
             try {
-                const res = await fetch('http://192.168.1.250:3000/models');
-                const data = await res.json();
+                const res = await await apiMain.get('/models');
+                const data = await res.data;
                 if (Array.isArray(data.data)) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     setModels(data.data.map((m: any) => m.id));
                 } else {
                     console.error('Некорректный ответ от /models:', data);
@@ -47,14 +50,12 @@ export default function ExecutionClient({ id }: { id: string }) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        await fetch(`http://192.168.1.250:3000/executions/${id}/steps`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
+        await await apiMain.post(`/executions/${id}/steps`,
+            {
                 type: 'agent',
-                input: { question, model: selectedModel },
-            }),
-        });
+                input: {question, model: selectedModel},
+            }
+        );
 
         setQuestion('');
 
@@ -62,8 +63,8 @@ export default function ExecutionClient({ id }: { id: string }) {
         startTransition(() => {
             const pollUntilOutput = async () => {
                 for (let i = 0; i < 10; i++) {
-                    const res = await fetch(`http://192.168.1.250:3000/executions/${id}`);
-                    const data = await res.json();
+                    const res = await await apiMain.get(`/executions/${id}`);
+                    const data = await res.data;
                     setExecution(data);
 
                     const lastStep = data.steps[data.steps.length - 1];
@@ -92,7 +93,9 @@ export default function ExecutionClient({ id }: { id: string }) {
             <h2 className="text-xl font-semibold mb-4">Steps</h2>
 
             <div className="space-y-4">
-                {execution.steps?.map((step: any) => (
+                {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    execution.steps?.map((step: any) => (
                     <div
                         key={step.id}
                         className="p-4 border rounded bg-white text-sm shadow-sm"

@@ -2,27 +2,34 @@
 
 import { useEffect, useState, useTransition } from 'react';
 import { useRouter } from 'next/navigation';
+import {apiMain} from "@/lib/axiosInstance";
+
+
 
 export default function ExecutionsPage() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const [executions, setExecutions] = useState<any[]>([]);
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
 
     const loadExecutions = async () => {
-        const res = await fetch('http://192.168.1.250:3000/executions');
-        const data = await res.json();
+        console.log('res - api:', apiMain);
+        const res = await apiMain.get('/executions');
+        console.log('res - executions:', res);
+        const data = await res.data;
         setExecutions(data);
     };
 
     useEffect(() => {
+        console.log('Executions page loaded');
         loadExecutions();
     }, []);
 
     const createExecution = async () => {
-        const res = await fetch('http://192.168.1.250:3000/executions', {
+        const res = await await apiMain.get('/executions', {
             method: 'POST',
         });
-        const data = await res.json();
+        const data = await res.data;
         router.push(`/executions/${data.id}`);
     };
 
