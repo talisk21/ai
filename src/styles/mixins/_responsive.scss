@@ -1,0 +1,50 @@
+@use '../breakpoints' as bp;
+
+// Media query: min-width
+@mixin respond-up($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Media query: max-width
+@mixin respond-down($breakpoint) {
+  @media (max-width: $breakpoint) {
+    @content;
+  }
+}
+
+// Mobile-only (up to 479px)
+@mixin mobileOnly {
+  @include respond-down(bp.$upToMobile) {
+    @content;
+  }
+}
+
+// Tablet and up (768px+)
+@mixin tabletUp {
+  @include respond-up(bp.$tablet) {
+    @content;
+  }
+}
+
+// Desktop and up (1280px+)
+@mixin desktopUp {
+  @include respond-up(bp.$desktop) {
+    @content;
+  }
+}
+
+// Between tablet and laptop
+@mixin tabletOnly {
+  @media (min-width: bp.$tablet) and (max-width: bp.$upToLaptop) {
+    @content;
+  }
+}
+
+// Between laptop and desktop
+@mixin laptopOnly {
+  @media (min-width: bp.$laptop) and (max-width: bp.$upToDesktop) {
+    @content;
+  }
+}

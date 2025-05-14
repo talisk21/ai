@@ -1,4 +1,5 @@
-import ExecutionPageClient from './ExecutionPageClient';
+
+import ExecutionClient from './ExecutionClient';
 
 interface PageProps {
     params: Promise<{ id: string }>
@@ -6,5 +7,5 @@ interface PageProps {
 
 export default async function ExecutionPage({ params }: PageProps) {
     const { id } = await params
-    return <ExecutionPageClient id={id} />;
+    return <ExecutionClient id={id} />;
 }

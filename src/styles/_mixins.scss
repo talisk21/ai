@@ -1,0 +1,20 @@
+@use './breakpoints' as *;
+
+@mixin respond-up($breakpoint) {
+  @media (min-width: $breakpoint) {
+    @content;
+  }
+}
+
+@mixin respond-down($breakpoint) {
+  @media (max-width: $breakpoint) {
+    @content;
+  }
+}
+
+
+@mixin mobileOnly {
+  @include respond-down($upToMobile) {
+    @content;
+  }
+}

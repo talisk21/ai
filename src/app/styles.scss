@@ -1,0 +1,17 @@
+
+@use '@/styles/mixins' as mx;
+
+.home-page {
+  padding-top: 36px;
+
+  &__container {
+    max-width: 600px;
+    margin: 0 auto;
+
+  }
+
+  &__page-text-wrapper {
+    margin-top: 48px;
+    text-align: center;
+  }
+}
