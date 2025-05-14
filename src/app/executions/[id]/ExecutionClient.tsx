@@ -3,28 +3,46 @@
 import { useEffect, useState, useTransition } from 'react';
 //import { useRouter } from 'next/navigation';
 import {apiMain} from "@/lib/axiosInstance";
+import {ExecutionType} from "@/types/execution";
+import Loader from "@/components/Loader";
+import Card from "@/components/Card";
+import './styles.scss';
+import Button from "@/components/Button";
+import {formatDateTimeToStringWithDot} from "@/utils/date";
+
 
 export default function ExecutionClient({ id }: { id: string }) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const [execution, setExecution] = useState<any>(null);
+    const [loading, setLoading] = useState<boolean>(false);
+
+    //// eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const [execution, setExecution] = useState<ExecutionType|null>(null);
     const [question, setQuestion] = useState('');
     const [models, setModels] = useState<string[]>([]);
     const [selectedModel, setSelectedModel] = useState<string>('openai/gpt-3.5-turbo');
     const [isPending, startTransition] = useTransition();
     //const router = useRouter();
 
-    const loadExecution = async () => {
-        try {
-            const res = await apiMain.get(`/executions/${id}`);
-            if (!res?.data) throw new Error('Ошибка загрузки');
-            const data = await res?.data
-            setExecution(data);
-        } catch (e) {
-            console.error('[UI] Ошибка при загрузке execution:', e);
-        }
-    };
+
 
     useEffect(() => {
+        const loadExecution = async () => {
+            setLoading(true);
+            try {
+                const res = await apiMain.get<ExecutionType>(`/executions/${id}`);
+                if (res.status !== 200) {
+                    console.log('There is an error:', res);
+                } else {
+                    const data = await res?.data
+                    console.log('res: ', data);
+                    setExecution(data);
+                }
+            } catch (e) {
+                console.error('[UI] Ошибка при загрузке execution:', e);
+            } finally {
+                setLoading(false);
+            }
+        };
+
         loadExecution();
     }, [id]);
 
@@ -50,96 +68,113 @@ export default function ExecutionClient({ id }: { id: string }) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        await await apiMain.post(`/executions/${id}/steps`,
-            {
-                type: 'agent',
-                input: {question, model: selectedModel},
-            }
-        );
-
-        setQuestion('');
-
-        // Ожидаем появления output
-        startTransition(() => {
-            const pollUntilOutput = async () => {
-                for (let i = 0; i < 10; i++) {
-                    const res = await await apiMain.get(`/executions/${id}`);
-                    const data = await res.data;
-                    setExecution(data);
-
-                    const lastStep = data.steps[data.steps.length - 1];
-                    if (lastStep?.output?.result || lastStep?.error) break;
-
-                    await new Promise((r) => setTimeout(r, 1000));
+        try {
+            await apiMain.post(`/executions/${id}/steps`,
+                {
+                    type: 'agent',
+                    input: {question, model: selectedModel},
                 }
-            };
+            );
+            setQuestion('');
 
-            pollUntilOutput();
-        });
+            // Ожидаем появления output
+            startTransition(() => {
+                const pollUntilOutput = async () => {
+                    for (let i = 0; i < 10; i++) {
+                        const res = await apiMain.get<ExecutionType>(`/executions/${id}`);
+
+                        const data = await res.data;
+                        setExecution(data);
+
+                        const lastStep = data.steps[data.steps.length - 1];
+                        if (lastStep?.output?.result || lastStep?.error) break;
+
+                        await new Promise((r) => setTimeout(r, 1000));
+                    }
+                };
+
+                pollUntilOutput();
+            });
+        } catch (err) {
+            console.log(err);
+        }
     };
 
     if (!execution) return <main className="p-6">Загрузка...</main>;
 
     return (
-        <main className="p-6 text-black bg-white">
-            <h1 className="text-2xl font-bold mb-4">Execution ID: {execution.id}</h1>
+        <main className="main">
+            {loading && <Loader  />}
+            <div className="page-container execution-page">
 
-            <div className="mb-6 space-y-1">
-                <p><strong>Status:</strong> {execution.status}</p>
-                <p><strong>Started At:</strong> {execution.startedAt}</p>
-                <p><strong>Finished At:</strong> {execution.finishedAt || '—'}</p>
-            </div>
 
-            <h2 className="text-xl font-semibold mb-4">Steps</h2>
+                <h1 className="text-2xl font-bold mb-4">Execution ID: {execution.id}</h1>
 
-            <div className="space-y-4">
-                {
-                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                    execution.steps?.map((step: any) => (
-                    <div
-                        key={step.id}
-                        className="p-4 border rounded bg-white text-sm shadow-sm"
-                    >
-                        <p><strong>Type:</strong> {step.type}</p>
-                        <p><strong>Input:</strong> <code>{JSON.stringify(step.input)}</code></p>
-                        <p><strong>Output:</strong> {step.output?.result || '—'}</p>
-                        {step.error && <p className="text-red-600"><strong>Error:</strong> {step.error}</p>}
-                    </div>
-                ))}
-            </div>
+                <Card>
+                    <p><strong>Status:</strong> {execution.status}</p>
+                    <p><strong>Started At:</strong> {formatDateTimeToStringWithDot(execution.startedAt)}</p>
+                    <p><strong>Finished At:</strong> {execution.finishedAt || '—'}</p>
+                </Card>
 
-            <hr className="my-8 border-gray-300" />
+                <h2 className="text-xl font-semibold mb-4">Steps</h2>
 
-            <form onSubmit={handleSubmit} className="space-y-3">
-                <h3 className="text-lg font-semibold">➕ Добавить шаг</h3>
+                <div className="execution-page__step-list">
+                    {
+                        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                        execution.steps?.map((step: any) => (
+                        <div key={step.id}>
+                            <Card classNames='light-card'>
+                                <p><strong>Type:</strong> {step.type}</p>
+                                <p><strong>Input:</strong></p>
+                                <code>
+                                    <p><strong>model:</strong> {step.input.model}</p>
+                                    <p><strong>question:</strong> {step.input.question}</p>
+                                </code>
 
-                <label className="block text-sm font-medium text-gray-700 mb-1">Модель</label>
-                <select
-                    value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                    className="w-full p-2 rounded border border-gray-400 bg-white text-black mb-4"
-                >
-                    {models.map((m) => (
-                        <option key={m} value={m}>{m}</option>
+                                <p>
+                                    <strong>Output:</strong> {step.output?.result || '—'}
+                                </p>
+                                {step.error && <p className="text-red-600"><strong>Error:</strong> {step.error}</p>}
+                            </Card>
+                        </div>
                     ))}
-                </select>
+                </div>
 
-                <input
-                    type="text"
-                    value={question}
-                    onChange={(e) => setQuestion(e.target.value)}
-                    placeholder="Введите вопрос..."
-                    className="w-full p-2 rounded border border-gray-400 bg-white text-black"
-                    required
-                />
-                <button
-                    type="submit"
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 disabled:opacity-50"
-                    disabled={isPending}
-                >
-                    {isPending ? 'Отправка...' : 'Добавить шаг'}
-                </button>
-            </form>
+                <hr />
+
+                <form onSubmit={handleSubmit} className="execution-page__form">
+                    <h3 className="text-lg font-semibold">➕ Добавить шаг</h3>
+
+                    <div className="execution-page__form-wrapper">
+                        <label className="block text-sm font-medium text-gray-700 mb-1">Модель</label>
+                        <select
+                            value={selectedModel}
+                            onChange={(e) => setSelectedModel(e.target.value)}
+                            className="w-full p-2 rounded border border-gray-400 bg-white text-black mb-4"
+                        >
+                            {models.map((m) => (
+                                <option key={m} value={m}>{m}</option>
+                            ))}
+                        </select>
+
+                        <input
+                            type="text"
+                            value={question}
+                            onChange={(e) => setQuestion(e.target.value)}
+                            placeholder="Введите вопрос..."
+                            className="w-full p-2 rounded border border-gray-400 bg-white text-black"
+                            required
+                        />
+                        <Button
+                            type="submit"
+
+                            disabled={isPending}
+                        >
+                            {isPending ? 'Отправка...' : 'Добавить шаг'}
+                        </Button>
+                    </div>
+                </form>
+            </div>
         </main>
     );
 }
