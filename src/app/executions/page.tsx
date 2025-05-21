@@ -10,22 +10,17 @@ import './styles.scss';
 import Card from "@/components/Card";
 import {formatDateTimeToStringWithDot} from "@/utils/date";
 
-
 export default function ExecutionsPage() {
     const [loading, setLoading] = useState<boolean>(false);
-
     const [executions, setExecutions] = useState<ExecutionType[]>([]);
     const [isPending, startTransition] = useTransition();
     const router = useRouter();
-
-
 
     useEffect(() => {
         const loadExecutions = async () => {
             setLoading(true);
             try {
                 const res = await apiMain.get('/executions');
-                console.log('res - executions:', res);
                 const data = await res.data;
                 setExecutions(data);
             } catch (error) {
@@ -39,9 +34,7 @@ export default function ExecutionsPage() {
     }, []);
 
     const createExecution = useCallback(async () => {
-        const res = await apiMain.get('/executions', {
-            method: 'POST',
-        });
+        const res = await apiMain.post('/executions');
         const data = await res.data;
         router.push(`/executions/${data.id}`);
     }, [router]);
@@ -60,22 +53,23 @@ export default function ExecutionsPage() {
                     </Button>
                 </div>
 
-
-
                 <ul className="executions-page__execution-list">
                     {executions.map((e) => (
-                        <li
-                            key={e.id}
-                            className=""
-                        >
+                        <li key={e.id}>
                             <Card>
-                                <a href={`/executions/${e.id}`} >
-                                <strong>ID:</strong> {e.id}
+                                <a href={`/executions/${e.id}`}>
+                                    <strong>ID:</strong> {e.id}
                                 </a>
                                 <br />
                                 <strong>Status:</strong> {e.status}
                                 <br />
                                 <strong>Started:</strong> {formatDateTimeToStringWithDot(e.startedAt)}
+                                <br />
+                                <div style={{ marginTop: '0.5rem' }}>
+                                    <Button onClick={() => router.push(`/executions/${e.id}/editor`)}>
+                                        ✏️ Редактировать
+                                    </Button>
+                                </div>
                             </Card>
                         </li>
                     ))}
