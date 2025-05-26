@@ -1,0 +1,31 @@
+.tool-block {
+  position: relative;
+  padding: 0 16px;
+  width: 100%;
+
+  &.can-remove {
+    padding-right: 36px;
+  }
+
+  &.need-border{
+    border-top: 1px solid var(--border-color);
+  }
+
+  .remove-tool-btn {
+    position: absolute;
+    right: 14px;
+    top: 32px;
+
+    svg path {
+      transition: fill 0.3s;
+    }
+
+    &:hover {
+      svg path {
+        fill: var(--error-color);
+      }
+    }
+
+
+  }
+}

@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import ReactFlow, {
     Background,
     Controls,
@@ -27,7 +27,7 @@ export default function EditorCanvas({ data }: EditorCanvasProps) {
 
     const handleAddNode = useCallback(() => {
         const newNodeId = `node-${nodeCount + 1}`
-
+        setNodeCount(prevState => prevState + 1);
         const newNode: Node = {
             id: newNodeId,
             position: {

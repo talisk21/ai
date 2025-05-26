@@ -1,0 +1,26 @@
+.node-editor {
+  &__wrapper {
+    position: relative;
+    z-index: 2;
+  }
+
+  &__tool-description {
+    font-size: 12px;
+    margin-top: -6px;
+    margin-bottom: 6px;
+    padding: 0 16px;
+  }
+
+  &__add-tool-btn-wrapper {
+    display: flex;
+    justify-content: center;
+    width: 100%
+  }
+
+  &__btn-wrapper {
+    display: flex;
+    justify-content: flex-end;
+    gap: 16px;
+    margin-top: 16px;
+  }
+}

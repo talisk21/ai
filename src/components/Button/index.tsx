@@ -8,6 +8,7 @@ export const enum ButtonVariant {
     PRIMARY = 'primary',
     SECONDARY = 'secondary',
     ICON = 'icon-btn',
+    metallic = 'metallic',
 }
 
 export type ButtonType = ComponentProps<"button"> & {
@@ -36,7 +37,7 @@ const Button: React.FC<ButtonType> = (props) => {
     return (
         <button
             type={type || "button"}
-            className={`btn ${classNames ? classNames : ''} ${isFullWidth ? "full-width" : ""} ${variant} ${isVisible ? 'fade-in' : 'fade-out'}`}
+            className={`btn${classNames ? ' '+classNames : ''}${isFullWidth ? " full-width" : ""} ${variant} ${isVisible ? 'fade-in' : 'fade-out'}`}
             {...otherProps}
         >
             {icon && !iconOnTheRight ? (

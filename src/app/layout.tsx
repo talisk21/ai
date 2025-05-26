@@ -1,15 +1,29 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Roboto, Inter, Oswald} from "next/font/google";
 import "../styles/globals.scss";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const roboto = Roboto({
+  weight: ["300", "400", "500", "700"],
+  style: ["normal", "italic"],
   subsets: ["latin"],
+  display: "swap",
+  variable: "--roboto-font",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const inter = Inter({
+  weight: ["400", "700", "900"],
+  style: ["normal"],
   subsets: ["latin"],
+  display: "swap",
+  variable: '--inter-font',
+});
+
+const oswald = Oswald({
+  weight: ["400","500", "700"],
+  style: ["normal"],
+  subsets: ["latin"],
+  display: "swap",
+  variable: '--title-font',
 });
 
 export const metadata: Metadata = {
@@ -23,11 +37,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+    <html lang="en" data-theme={'dark'}>
+    <body className={`${inter.variable} ${roboto.variable} ${oswald.variable}`}>
         {children}
+        <div id="root"></div>
+        <div id="modal-root"></div>
       </body>
     </html>
   );

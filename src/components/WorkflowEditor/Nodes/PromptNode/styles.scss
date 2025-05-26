@@ -1,0 +1,43 @@
+.prompt-node,
+.react-flow__node-dragging .prompt-node {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 2px solid var(--border-color);
+  background: var(--card-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  cursor: pointer;
+  transition: .5s ease;
+
+  &__title {
+    display: block;
+    font-size: 10px;
+    //margin-bottom: 8px;
+    //font-weight: bold;
+    margin: 0;
+  }
+
+  &--selected {
+    //border: 2px solid #007aff;
+    background: var(--card-color-highlighted);
+    //box-shadow: 0 4px 12px rgba(0, 122, 255, 0.4);
+  }
+
+  &--active {
+    //outline: 2px solid var(--primary-color);
+    background-color: var(--card-color-highlighted);
+    box-shadow: 0 0 10px var(--primary-color);
+  }
+
+  &__label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+  }
+
+  &__icon {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    font-size: 1rem;
+  }
+}

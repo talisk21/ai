@@ -5,6 +5,7 @@ import { apiMain } from "@/lib/axiosInstance";
 import { ExecutionType } from "@/types/execution";
 import Loader from "@/components/Loader";
 import Card from "@/components/Card";
+import './styles.scss';
 import Button from "@/components/Button";
 import { formatDateTimeToStringWithDot } from "@/utils/date";
 import './styles.scss';
@@ -17,6 +18,7 @@ export default function ExecutionClient({ id }: { id: string }) {
     const [selectedModel, setSelectedModel] = useState<string>('openai/gpt-4o');
     const [selectedAgent, setSelectedAgent] = useState<string>('llm-tool-decision-agent');
     const [isPending, startTransition] = useTransition();
+    //const router = useRouter();
 
     const agentOptions = [
         'llm-agent',
@@ -50,6 +52,7 @@ export default function ExecutionClient({ id }: { id: string }) {
                 const res = await apiMain.get('/models');
                 const data = await res.data;
                 if (Array.isArray(data.data)) {
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
                     setModels(data.data.map((m: any) => m.id));
                 } else {
                     console.error('Некорректный ответ от /models:', data);
@@ -76,6 +79,7 @@ export default function ExecutionClient({ id }: { id: string }) {
 
             setQuestion('');
 
+            // Ожидаем появления output
             startTransition(() => {
                 const pollUntilOutput = async () => {
                     for (let i = 0; i < 10; i++) {
@@ -114,6 +118,7 @@ export default function ExecutionClient({ id }: { id: string }) {
               <h2 className="text-xl font-semibold mb-4">Steps</h2>
 
               <div className="execution-page__step-list">
+                   {/*eslint-disable-next-line @typescript-eslint/no-explicit-any*/}
                   {execution.steps?.map((step: any) => (
                     <div key={step.id}>
                         <Card classNames='light-card'>

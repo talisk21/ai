@@ -1,0 +1,94 @@
+.radio-button {
+  &__wrapper {
+    display: flex;
+  }
+
+  &-label {
+    margin-right: 16px;
+    padding-top: 12px;
+  }
+
+  &__group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+
+    &.align {
+      &-center {
+        justify-content: center;
+      }
+    }
+  }
+
+  &__option {
+    display: flex;
+    align-items: center;
+    padding: 12px 16px 12px 12px;
+    font-size: 12px;
+    font-weight: bold;
+    color: var(--font-color-quaternary);
+    border-radius: 30px;
+    border: var(--border-width) solid var(--border-color);
+    background-color: var(--card-color);
+    transition: all 0.3s ease;
+
+    &:hover,
+    &:focus,
+    &:active {
+      border-color: var(--primary-color);
+    }
+
+    &-decor {
+      position: relative;
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      border: 2px solid var(--border-color);
+      margin-right: 4px;
+      transition: all 0.3s ease;
+
+      [data-theme="dark"] & {
+        border-color: var(--font-color-quaternary);
+      }
+
+      .is-checked & {
+        border-color: var(--primary-color);
+        transition: .3s ease;
+
+        &::after {
+          content: '';
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          background-color: var(--primary-color);
+          transition: .3s ease;
+        }
+
+      }
+
+    }
+
+    &.is-checked {
+      //color: white;
+      border-color: var(--primary-color);
+
+
+    }
+
+    .flag-icon {
+      margin-left: 6px;
+    }
+
+    &.is-disabled {
+      background-color: var(--background-color);
+      color: var(--primary-color)
+    }
+  }
+
+
+}
