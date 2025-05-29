@@ -18,7 +18,7 @@ export default function RouteEditorPage() {
                 id: 'node-1',
                 position: { x: 100, y: 100 },
                 data: {
-                    label: 'Начало',
+                    label: 'Start',
                     isStart: true,
                     isActive: false,
                     tools: []
@@ -44,7 +44,7 @@ export default function RouteEditorPage() {
         <main className="main">
             {data ? null : <Loader />}
             <div className="page-container workflow-editor-page">
-                <h1 className="">🛠 Конструктор маршрута</h1>
+                <h1 className="">🛠 Route editor</h1>
                 {/*{data ? <EditorCanvas data={data} /> : null}*/}
                 {data ? <WorkflowCanvas data={data} /> : null}
             </div>
