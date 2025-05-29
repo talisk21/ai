@@ -16,6 +16,7 @@ const TextArea= forwardRef<HTMLTextAreaElement, FieldPropsType>(({
      width,
      rows = 4,
     extraDescription='',
+    description='',
      ...otherProps
  }, ref) => {
 
@@ -42,6 +43,7 @@ const TextArea= forwardRef<HTMLTextAreaElement, FieldPropsType>(({
                     autoComplete="new-user-email"
                     aria-autocomplete='none'
                 />
+                {description && <p className={`form-control__extra-description`}>{description}</p>}
                 {errorMessage && <p className="error">{errorMessage}</p>}
             </div>
         </div>

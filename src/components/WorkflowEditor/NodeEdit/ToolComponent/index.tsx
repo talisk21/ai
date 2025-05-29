@@ -48,7 +48,7 @@ const ToolComponent:React.FC<ToolComponentPropsType> = ({toolCategories, toolPar
     useEffect(() => {
         if (!currentTool) return;
 
-        const newProps = (currentTool.props || []).map((paramProp: ToolParamsPropType, i: number) => {
+        const newProps = (currentTool.inputSpec || []).map((paramProp: ToolParamsPropType, i: number) => {
             console.log('paramProps: ', paramProp)
             const existing = currentToolProps?.find((p: ToolPropType) => p.name === paramProp.name);
             return {
@@ -68,11 +68,12 @@ const ToolComponent:React.FC<ToolComponentPropsType> = ({toolCategories, toolPar
     ), [selectedCategory, filteredTools]);
 
     const propsFields = useMemo(() =>
-        (currentTool?.props || []).map((prop: ToolParamsPropType, propIndex: number) => ({
+        (currentTool?.inputSpec || []).map((prop: ToolParamsPropType, propIndex: number) => ({
             fieldType: prop.type === 'boolean'
                 ? FormFieldTypes.TOGGLE
                 : prop.type === 'number'
                     ? FormFieldTypes.NUMBER
+                    : prop.type === 'object' || prop.type === 'array' ? FormFieldTypes.TEXT_AREA
                     : FormFieldTypes.TEXT,
             name: `tools.${toolIndex}.toolProps.${propIndex}.value`,
             label: prop.name,
@@ -85,7 +86,7 @@ const ToolComponent:React.FC<ToolComponentPropsType> = ({toolCategories, toolPar
     useEffect(() => {
         if (!currentTool) return;
 
-        currentTool.props?.forEach((prop, i) => {
+        currentTool.inputSpec?.forEach((prop, i) => {
             setValue(`tools.${toolIndex}.toolProps.${i}.name`, prop.name);
         });
     }, [currentTool, toolIndex]);

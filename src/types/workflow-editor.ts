@@ -9,7 +9,7 @@ export type ToolParamsType = {
     category: string;
     name: string;
     description: string;
-    props: ToolParamsPropType[];
+    inputSpec: ToolParamsPropType[];
 }
 
 export type AiModelType = {

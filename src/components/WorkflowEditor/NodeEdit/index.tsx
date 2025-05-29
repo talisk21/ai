@@ -46,7 +46,7 @@ const NodeEdit: React.FC<PromptModeEditPropsType> = ({data, toolParams, models, 
             : toolParams?.length
                 ? [{
                     name: toolParams[0].name,
-                    toolProps: (toolParams[0].props || []).map((prop, i) => ({
+                    toolProps: (toolParams[0].inputSpec || []).map((prop, i) => ({
                         key: `${prop.name}_${i}`,
                         name: prop.name || '',
                         value: '',
