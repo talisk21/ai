@@ -22,8 +22,6 @@ export default function Home() {
           <h1>Welcome to our AI project!</h1>
           <Button onClick={handleProceed}>Proceed to chats</Button>
         </div>
-
-
       </div>
     </div>
   );

@@ -29,6 +29,8 @@ import {AiModelType, ToolParamsType} from "@/types/workflow-editor";
 import {OptionType} from "@/types/utility";
 import {createOptions} from "@/utils/utility";
 import Card from "@/components/Card";
+import { v4 as uuid } from 'uuid';
+
 
 type PromptNodeProps = NodeProps<Node<PromptNodeDataType>>;
 
@@ -54,7 +56,7 @@ export default function EditorCanvas({ data }: EditorCanvasProps) {
     useEffect(() => {
         const getParams = async () => {
             try {
-                const res = await apiMain.get('/api/tools');
+                const res = await apiMain.get('/tools');
 
                 if (res && res.status === 200 && res.data) {
                     setTools(res.data);
@@ -129,7 +131,7 @@ export default function EditorCanvas({ data }: EditorCanvasProps) {
     );
 
     const handleAddNode = useCallback(() => {
-        const newNodeId = `node-${nodeCount + 1}`
+        const newNodeId = uuid();
 
         console.log('add: ', newNodeId)
 
@@ -172,18 +174,22 @@ export default function EditorCanvas({ data }: EditorCanvasProps) {
     const sendFlow = async () => {
 
         console.log('sendFlow', {data: {nodes, edges}});
-        // try {
-        //     const res = await apiMain.post('/api/tools', {data: {nodes, edges}});
-        //
-        //     if (res && res.status === 200 && res.data) {
-        //         console.log('All is well!')
-        //     } else {
-        //         //display modal with error
-        //         console.error(res)
-        //     }
-        // } catch (error) {
-        //     console.log(error);
-        // }
+        try {
+            const res = await apiMain.post('/routes/create', {
+                name: "Default",
+                steps: {nodes, edges}
+            }
+            );
+
+            if (res && res.status === 200 && res.data) {
+                console.log('All is well!')
+            } else {
+                //display modal with error
+                console.error(res)
+            }
+        } catch (error) {
+            console.log(error);
+        }
     }
 
 
